@@ -1,14 +1,48 @@
 <!DOCTYPE html><html lang="hi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Akbrand ULTRA MEGA</title>
-<style>body{margin:0;background:#000;color:#fff;font-family:Arial}.header{background:#111;padding:15px;text-align:center;border-bottom:2px solid #00ff88}.box{max-width:850px;margin:15px auto;background:#181818;padding:20px;border-radius:15px;border:1px solid #333}input,textarea{width:95%;padding:14px;margin:8px 0;border-radius:10px;background:#222;color:#fff;border:1px solid #333}button{padding:12px 20px;background:linear-gradient(90deg,#00ff88,#00ccff);border:0;border-radius:10px;font-weight:bold;color:#000;margin:5px;cursor:pointer}#main{display:none}#ans{background:#222;padding:15px;border-radius:10px;margin-top:10px;white-space:pre-wrap;text-align:left;min-height:100px;border:1px solid #333}.msg{padding:10px;margin:8px 0;border-radius:10px}.user{background:#00ff8822;text-align:right}.ai{background:#2a2a2a}#preview{max-width:100%;border-radius:10px;margin-top:10px;display:none}.switch{padding:8px 15px;background:#333;color:#fff;border-radius:20px;font-size:13px}</style></head><body>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#000000">
+<style>
+:root{--bg:#000;--card:#181818;--text:#fff;--border:#333}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial;transition:0.3s}
+.header{background:#111;padding:15px;text-align:center;border-bottom:2px solid #00ff88}
+.box{max-width:850px;margin:15px auto;background:var(--card);padding:20px;border-radius:15px;border:1px solid var(--border)}
+input,textarea{width:95%;padding:14px;margin:8px 0;border-radius:10px;background:#222;color:#fff;border:1px solid #333}
+button{padding:12px 20px;background:linear-gradient(90deg,#00ff88,#00ccff);border:0;border-radius:10px;font-weight:bold;color:#000;margin:5px;cursor:pointer}
+#main{display:none}
+#ans{background:#222;padding:15px;border-radius:10px;margin-top:10px;white-space:pre-wrap;text-align:left;min-height:100px;border:1px solid #333}
+.msg{padding:12px;margin:10px 0;border-radius:15px;max-width:85%;line-height:1.4}
+.user{background:#00ff88;color:#000;margin-left:auto;text-align:right;border-bottom-right-radius:2px}
+.ai{background:#2a2a2a;border-bottom-left-radius:2px}
+#preview{max-width:100%;border-radius:10px;margin-top:10px;display:none}
+.switch{padding:8px 15px;background:#333;color:#fff;border-radius:20px;font-size:13px}
+.theme-bar{position:fixed;top:10px;right:10px;z-index:9999;display:flex;gap:5px;flex-wrap:wrap}
+.theme-bar button{padding:6px 10px;font-size:12px;background:#fff;color:#000;border-radius:20px}
+#installBar{display:none;position:fixed;bottom:15px;left:50%;transform:translateX(-50%);background:#00ff88;color:#000;padding:12px 20px;border-radius:30px;font-weight:bold;z-index:10000;box-shadow:0 5px 20px #00000088}
+#welcome{position:fixed;inset:0;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:20000;animation:fadeOut 1s 2.5s forwards}
+@keyframes fadeOut{to{opacity:0;visibility:hidden}}
+</style></head><body>
+
+<div id="welcome"><h1 style="font-size:40px">🔥 AKBRAND 🔥</h1><p>Welcome Aman!</p><p style="font-size:12px;color:#888">Loading...</p></div>
+
+<div class="theme-bar">
+<button onclick="setTheme('black')">⚫ Black</button>
+<button onclick="setTheme('white')">⚪ White</button>
+<button onclick="setTheme('pink')">🌸 Pink</button>
+<button onclick="setTheme('cream')">🍦 Cream</button>
+</div>
+
+<button id="installBar" onclick="installApp()">📲 Install App</button>
+
 <div class="header"><h1>🔥 AKBRAND ULTRA MEGA 🔥</h1><p>405B+70B+Vision+Photo+Live Search - Sab Kuch</p></div>
 <div class="box">
 <div id="login"><h2>OTP Login</h2><input id="phone" placeholder="+91XXXXXXXXXX" value="+91"><button onclick="sendOTP()">OTP Bhejo</button><input id="otp" placeholder="6 Digit OTP" style="display:none"><button id="vBtn" onclick="verifyOTP()" style="display:none">Verify</button><div id="recaptcha"></div><p style="font-size:11px;color:#888">Phone pe OTP ayega, 50/day Free hai</p></div>
 <div id="main"><h2>Akbrand Ready! Aman 🔥</h2>
 <button id="liveBtn" class="switch" onclick="toggleLive()">🔴 Live Search: OFF</button><span style="font-size:11px;color:#888"> ON karo to latest news/price ayega</span><br><br>
 <input type="file" id="imgInput" accept="image/*" onchange="loadImg(event)"><img id="preview">
+<div id="history" style="max-height:60vh;overflow-y:auto;display:flex;flex-direction:column"></div>
 <textarea id="q" rows="3" placeholder="Kuch bhi pucho... aaj ka news, math, photo banao, screenshot translate..."></textarea><br>
 <button onclick="askAk()">🚀 Bhejo</button><button onclick="clearChat()" style="background:#333;color:#fff">Clear</button>
-<div id="ans">👋 Welcome Aman! Mai Akbrand hu - Photo, Live News, sab kuch ready hai!</div><div id="history"></div></div>
+<div id="ans">👋 Welcome Aman! Mai Akbrand hu - Photo, Live News, sab kuch ready hai!</div></div>
 </div>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -19,20 +53,35 @@ window.loadImg=(e)=>{let f=e.target.files[0]; let r=new FileReader(); r.onload=(
 window.toggleLive=()=>{liveOn=!liveOn; document.getElementById('liveBtn').innerText=liveOn?"🟢 Live Search: ON":"🔴 Live Search: OFF"; document.getElementById('liveBtn').style.background=liveOn?"#00ff88":"#333";}
 window.sendOTP=()=>{window.recaptchaVerifier=new RecaptchaVerifier(auth,'recaptcha',{}); signInWithPhoneNumber(auth,phone.value,window.recaptchaVerifier).then(r=>{confirmRes=r; alert("OTP gaya"); otp.style.display='block'; vBtn.style.display='inline-block';}).catch(e=>alert(e.message));}
 window.verifyOTP=()=>{confirmRes.confirm(otp.value).then(()=>{login.style.display='none'; main.style.display='block';}).catch(()=>alert("Galat OTP"));}
-window.clearChat=()=>{ans.innerText='Clear'; history.innerHTML=''; base64Img=""; preview.style.display='none';}
+window.clearChat=()=>{ans.innerText='Welcome Aman!'; history.innerHTML=''; base64Img=""; preview.style.display='none'; q.value='';}
 async function getLiveData(q){ try{ let res=await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(q)}&format=json&pretty=1`); let d=await res.json(); return d.AbstractText||d.RelatedTopics?.[0]?.Text||""; }catch(e){return "";}}
 window.askAk = async ()=>{
  let q=document.getElementById('q').value.trim(); let a=document.getElementById('ans'); let h=document.getElementById('history');
  if(!q &&!base64Img){alert("Kuch likho"); return;}
- h.innerHTML+=`<div class="msg user">${q||"Photo"} ${base64Img?'<br><img src="'+base64Img+'" style="width:60px">':''}</div>`;
+ h.innerHTML+=`<div class="msg user">${q||"Photo"} ${base64Img?'<br><img src="'+base64Img+'" style="width:60px;border-radius:8px">':''}</div>`;
+ document.getElementById('q').value='';
  if(!base64Img && (q.toLowerCase().includes("photo")||q.toLowerCase().includes("poster")||q.toLowerCase().includes("logo")||q.toLowerCase().includes("image banao"))){
-   let img=`https://image.pollinations.ai/prompt/${encodeURIComponent(q)}?width=1024&height=1024&seed=${Date.now()}`; a.innerHTML=`<img src="${img}" style="width:100%;border-radius:10px"><br><a href="${img}" target="_blank" style="color:#00ff88">Download</a>`; h.innerHTML+=`<div class="msg ai"><img src="${img}" style="width:100%"></div>`; return;
+   let img=`https://image.pollinations.ai/prompt/${encodeURIComponent(q)}?width=1024&height=1024&seed=${Date.now()}`; a.innerHTML=`<img src="${img}" style="width:100%;border-radius:10px"><br><a href="${img}" target="_blank" style="color:#00ff88">Download</a>`; h.innerHTML+=`<div class="msg ai"><img src="${img}" style="width:100%;border-radius:10px"><br><a href="${img}" target="_blank" style="color:#00ff88">Download</a></div>`; h.scrollTop=h.scrollHeight; return;
  }
  a.innerText="Akbrand soch raha hai..."+(liveOn?" Live Search ON hai...":"");
  let liveContext=""; if(liveOn || q.toLowerCase().match(/aaj|latest|news|price|bhav|mausam|score/)){ liveContext=await getLiveData(q); }
  let payload; if(base64Img){ payload={model:"llama-3.2-11b-vision-preview",messages:[{role:"user",content:[{type:"text",text:(liveContext+"\n\n"+q)||"Is photo ka detail batao"},{type:"image_url",image_url:{url:base64Img}}]}]}; } else { payload={model:"llama-3.3-70b-versatile",messages:[{role:"system",content:`Tum Akbrand ho. ${liveContext} Hindi me jawab do.`},{role:"user",content:q}]}; }
  let r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
  let d=await r.json(); let finalAns=d.choices?.[0]?.message?.content||"Error: "+JSON.stringify(d);
- a.innerText=finalAns; h.innerHTML+=`<div class="msg ai">${finalAns.replace(/</g,'&lt;')}</div>`;
+ a.innerText=finalAns; h.innerHTML+=`<div class="msg ai">${finalAns.replace(/</g,'&lt;')}</div>`; h.scrollTop=h.scrollHeight;
 }
-</script></body></html>
+</script>
+<script>
+// Theme + PWA
+function setTheme(t){
+ if(t=='black'){document.documentElement.style.setProperty('--bg','#000000');document.documentElement.style.setProperty('--card','#181818');document.documentElement.style.setProperty('--text','#ffffff')}
+ if(t=='white'){document.documentElement.style.setProperty('--bg','#ffffff');document.documentElement.style.setProperty('--card','#f2f2f2');document.documentElement.style.setProperty('--text','#000000')}
+ if(t=='pink'){document.documentElement.style.setProperty('--bg','#ffdee9');document.documentElement.style.setProperty('--card','#fff0f5');document.documentElement.style.setProperty('--text','#000000')}
+ if(t=='cream'){document.documentElement.style.setProperty('--bg','#fff8e7');document.documentElement.style.setProperty('--card','#fff8e7');document.documentElement.style.setProperty('--text','#000000')}
+ localStorage.setItem('ak_theme',t)
+}
+let saved=localStorage.getItem('ak_theme'); if(saved) setTheme(saved);
+let deferredPrompt; window.addEventListener('beforeinstallprompt',(e)=>{e.preventDefault();deferredPrompt=e;document.getElementById('installBar').style.display='block'});
+function installApp(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{document.getElementById('installBar').style.display='none'})}}
+</script>
+</body></html>
