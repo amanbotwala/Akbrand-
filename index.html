@@ -1,87 +1,93 @@
-<!DOCTYPE html><html lang="hi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Akbrand ULTRA MEGA</title>
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#000000">
+<!DOCTYPE html><html lang="hi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Akbrand Assistant - Chat with Akbrand</title>
+<link rel="manifest" href="/manifest.json"><meta name="theme-color" content="#000000">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-:root{--bg:#000;--card:#181818;--text:#fff;--border:#333}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial;transition:0.3s}
-.header{background:#111;padding:15px;text-align:center;border-bottom:2px solid #00ff88}
-.box{max-width:850px;margin:15px auto;background:var(--card);padding:20px;border-radius:15px;border:1px solid var(--border)}
-input,textarea{width:95%;padding:14px;margin:8px 0;border-radius:10px;background:#222;color:#fff;border:1px solid #333}
-button{padding:12px 20px;background:linear-gradient(90deg,#00ff88,#00ccff);border:0;border-radius:10px;font-weight:bold;color:#000;margin:5px;cursor:pointer}
-#main{display:none}
-#ans{background:#222;padding:15px;border-radius:10px;margin-top:10px;white-space:pre-wrap;text-align:left;min-height:100px;border:1px solid #333}
-.msg{padding:12px;margin:10px 0;border-radius:15px;max-width:85%;line-height:1.4}
-.user{background:#00ff88;color:#000;margin-left:auto;text-align:right;border-bottom-right-radius:2px}
-.ai{background:#2a2a2a;border-bottom-left-radius:2px}
-#preview{max-width:100%;border-radius:10px;margin-top:10px;display:none}
-.switch{padding:8px 15px;background:#333;color:#fff;border-radius:20px;font-size:13px}
-.theme-bar{position:fixed;top:10px;right:10px;z-index:9999;display:flex;gap:5px;flex-wrap:wrap}
-.theme-bar button{padding:6px 10px;font-size:12px;background:#fff;color:#000;border-radius:20px}
-#installBar{display:none;position:fixed;bottom:15px;left:50%;transform:translateX(-50%);background:#00ff88;color:#000;padding:12px 20px;border-radius:30px;font-weight:bold;z-index:10000;box-shadow:0 5px 20px #00000088}
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#000;--card:#181818;--sidebar:#0f0f0f;--text:#fff;--border:#2a2a2a;--green:#00ff88;--hover:#222}
+body{background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif;display:flex;height:100vh;overflow:hidden}
+#sidebar{width:260px;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:10px;transition:0.3s;z-index:100}
+#sidebar.collapsed{margin-left:-260px}
+.sidebar-top{display:flex;align-items:center;gap:10px;padding:12px 10px;border-bottom:1px solid var(--border);margin-bottom:10px}
+.logo{width:36px;height:36px;background:linear-gradient(135deg,#00ff88,#00ccff);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:18px}
+.logo-text{font-weight:800;font-size:16px}.logo-text span{color:var(--green)}
+.new-chat-btn{width:100%;padding:12px;background:transparent;border:1px solid var(--border);border-radius:10px;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:10px;font-size:14px;margin-bottom:15px}
+.new-chat-btn:hover{background:var(--hover)}
+.history-title{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px;padding:10px 5px}
+#historyList{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+.history-item{padding:10px 12px;border-radius:8px;font-size:13px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:8px;color:#bbb}
+.history-item:hover{background:var(--hover);color:#fff}
+.history-item.active{background:var(--hover);color:#fff}
+.sidebar-bottom{border-top:1px solid var(--border);padding-top:10px;margin-top:auto;display:flex;flex-direction:column;gap:5px}
+.side-btn{padding:10px 12px;border-radius:8px;background:transparent;border:0;color:#bbb;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;font-size:13px}
+.side-btn:hover{background:var(--hover);color:#fff}
+#mainWrap{flex:1;display:flex;flex-direction:column;position:relative;background:var(--bg)}
+.header{padding:15px 20px;display:flex;align-items:center;gap:15px;border-bottom:1px solid var(--border);background:var(--card)}
+#main{flex:1;display:none;flex-direction:column;overflow:hidden}
+#login{display:flex;align-items:center;justify-content:center;flex:1;background:radial-gradient(circle at top,#111,#000)}
+.login-box{background:var(--card);padding:30px;border-radius:20px;border:1px solid var(--border);width:90%;max-width:380px;text-align:center}
+input,textarea{width:100%;padding:14px;margin:8px 0;border-radius:10px;background:#222;color:#fff;border:1px solid var(--border);outline:none}
+button.primary{width:100%;padding:12px;background:linear-gradient(90deg,#00ff88,#00ccff);border:0;border-radius:10px;font-weight:bold;color:#000;cursor:pointer;margin-top:10px}
+#chatArea{flex:1;overflow-y:auto;padding:20px;max-width:800px;margin:0 auto;width:100%;display:flex;flex-direction:column;gap:15px}
+.msg{padding:14px 16px;border-radius:18px;max-width:85%;line-height:1.5;font-size:14px}
+.user{background:var(--green);color:#000;margin-left:auto;border-bottom-right-radius:4px}
+.ai{background:var(--card);border:1px solid var(--border);border-bottom-left-radius:4px}
+.input-bar{padding:15px 20px;border-top:1px solid var(--border);background:var(--card);max-width:800px;margin:0 auto;width:100%;display:flex;gap:10px;align-items:end}
+.input-bar textarea{flex:1;resize:none;max-height:120px;margin:0}
+.icon-btn{width:44px;height:44px;border-radius:10px;background:var(--hover);border:1px solid var(--border);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}
+#settingsModal{display:none;position:fixed;inset:0;background:#000000cc;z-index:5000;align-items:center;justify-content:center}
+#settingsModal.open{display:flex}
+.modal{background:var(--card);width:90%;max-width:450px;border-radius:20px;border:1px solid var(--border);overflow:hidden}
+.modal-head{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-body{padding:20px;max-height:70vh;overflow-y:auto}
+#profilePic{width:80px;height:80px;border-radius:50%;background:#222;object-fit:cover;border:2px solid var(--green);cursor:pointer}
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.theme-opt{padding:12px;border-radius:10px;border:1px solid var(--border);cursor:pointer;text-align:center;font-size:13px}
+.account-box{background:#111;padding:12px;border-radius:10px;margin:10px 0;font-size:13px;border:1px solid var(--border)}
+#menuBtn{display:none}
+@media(max-width:768px){#sidebar{position:fixed;left:0;top:0;bottom:0}#menuBtn{display:flex}}
 #welcome{position:fixed;inset:0;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:20000;animation:fadeOut 1s 2.5s forwards}
 @keyframes fadeOut{to{opacity:0;visibility:hidden}}
 </style></head><body>
-
-<div id="welcome"><h1 style="font-size:40px">🔥 AKBRAND 🔥</h1><p>Welcome Aman!</p><p style="font-size:12px;color:#888">Loading...</p></div>
-
-<div class="theme-bar">
-<button onclick="setTheme('black')">⚫ Black</button>
-<button onclick="setTheme('white')">⚪ White</button>
-<button onclick="setTheme('pink')">🌸 Pink</button>
-<button onclick="setTheme('cream')">🍦 Cream</button>
-</div>
-
-<button id="installBar" onclick="installApp()">📲 Install App</button>
-
-<div class="header"><h1>🔥 AKBRAND ULTRA MEGA 🔥</h1><p>405B+70B+Vision+Photo+Live Search - Sab Kuch</p></div>
-<div class="box">
-<div id="login"><h2>OTP Login</h2><input id="phone" placeholder="+91XXXXXXXXXX" value="+91"><button onclick="sendOTP()">OTP Bhejo</button><input id="otp" placeholder="6 Digit OTP" style="display:none"><button id="vBtn" onclick="verifyOTP()" style="display:none">Verify</button><div id="recaptcha"></div><p style="font-size:11px;color:#888">Phone pe OTP ayega, 50/day Free hai</p></div>
-<div id="main"><h2>Akbrand Ready! Aman 🔥</h2>
-<button id="liveBtn" class="switch" onclick="toggleLive()">🔴 Live Search: OFF</button><span style="font-size:11px;color:#888"> ON karo to latest news/price ayega</span><br><br>
-<input type="file" id="imgInput" accept="image/*" onchange="loadImg(event)"><img id="preview">
-<div id="history" style="max-height:60vh;overflow-y:auto;display:flex;flex-direction:column"></div>
-<textarea id="q" rows="3" placeholder="Kuch bhi pucho... aaj ka news, math, photo banao, screenshot translate..."></textarea><br>
-<button onclick="askAk()">🚀 Bhejo</button><button onclick="clearChat()" style="background:#333;color:#fff">Clear</button>
-<div id="ans">👋 Welcome Aman! Mai Akbrand hu - Photo, Live News, sab kuch ready hai!</div></div>
-</div>
+<div id="welcome"><h1 style="font-size:40px">🔥 AKBRAND 🔥</h1><p>Chat with Akbrand</p></div>
+<div id="sidebar">
+<div class="sidebar-top"><div class="logo">A</div><div class="logo-text">Akbrand <span>Assistant</span></div><button onclick="toggleSidebar()" style="margin-left:auto;background:transparent;border:0;color:#888;cursor:pointer"><i class="fa fa-bars"></i></button></div>
+<button class="new-chat-btn" onclick="newChat()"><i class="fa fa-plus"></i> New Chat</button>
+<div class="history-title">Chat History</div><div id="historyList"></div>
+<div class="sidebar-bottom">
+<button class="side-btn" onclick="clearAllChats()"><i class="fa fa-trash"></i> Clear Conversations</button>
+<button class="side-btn" onclick="openSettings()"><i class="fa fa-gear"></i> Settings & Profile</button>
+<div class="side-btn" id="userEmailDisplay" style="color:var(--green)"><i class="fa fa-user"></i> <span>Not Logged</span></div>
+<button class="side-btn" onclick="logout()"><i class="fa fa-right-from-bracket"></i> Log Out</button>
+</div></div>
+<div id="mainWrap">
+<div class="header"><button id="menuBtn" class="icon-btn" onclick="toggleSidebar()"><i class="fa fa-bars"></i></button><div><h1>🔥 AKBRAND ULTRA MEGA</h1><p style="font-size:12px;color:#888">405B+70B+Vision+Photo+Live Search</p></div><div style="margin-left:auto"><button id="liveBtn" onclick="toggleLive()" style="padding:8px 12px;border-radius:20px;border:1px solid var(--border);background:#222;color:#fff;font-size:12px;cursor:pointer">🔴 Live: OFF</button></div></div>
+<div id="login"><div class="login-box"><div class="logo" style="margin:0 auto 15px;width:60px;height:60px;font-size:28px">A</div><h2>Chat with Akbrand</h2><p style="color:#888;font-size:13px;margin-bottom:15px">Email se login - Free, No Card</p><input type="email" id="email" placeholder="Email likho"><input type="password" id="password" placeholder="Password (min 6)"><button class="primary" onclick="loginEmail()">Login / Sign Up</button><p style="font-size:11px;color:#666;margin-top:10px">Pehli baar? Password daalo, auto account ban jayega ✅</p></div></div>
+<div id="main"><div id="chatArea"><div id="history"></div><div id="ans"></div><img id="preview" style="max-width:100px;border-radius:10px;display:none"></div>
+<div class="input-bar"><label class="icon-btn" style="cursor:pointer"><i class="fa fa-image"></i><input type="file" id="imgInput" accept="image/*" hidden onchange="loadImg(event)"></label><textarea id="q" rows="1" placeholder="Kuch bhi pucho..." oninput="autoGrow(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();askAk()}"></textarea><button class="icon-btn" style="background:var(--green);color:#000" onclick="askAk()"><i class="fa fa-paper-plane"></i></button></div></div></div>
+<div id="settingsModal"><div class="modal"><div class="modal-head"><h3>Settings</h3><button onclick="closeSettings()" style="background:transparent;border:0;color:#fff;font-size:20px;cursor:pointer">×</button></div><div class="modal-body"><div style="text-align:center"><img id="profilePic" src="" onclick="document.getElementById('picInput').click()"><input type="file" id="picInput" accept="image/*" hidden onchange="changeProfilePic(event)"><p style="margin-top:10px;font-size:13px;color:#888">Photo pe click karke badlo</p></div><div class="account-box"><b>Account Info</b><div id="accountInfo" style="margin-top:8px">Loading...</div></div><div><b>Themes</b><div class="theme-grid"><div class="theme-opt" onclick="setTheme('black')">⚫ Black</div><div class="theme-opt" onclick="setTheme('white')">⚪ White</div><div class="theme-opt" onclick="setTheme('pink')">🌸 Pink</div><div class="theme-opt" onclick="setTheme('cream')">🍦 Cream</div></div></div><div style="margin-top:15px"><b>Chat Info</b><div class="account-box"><span id="chatCount">0</span> conversations<br><span style="font-size:11px;color:#888">History local me safe hai</span></div></div></div></div></div>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {getAuth,RecaptchaVerifier,signInWithPhoneNumber} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-const firebaseConfig = {apiKey: "AIzaSyAlCB1ZXq8Q7TbZn9ud1hwga9F6qNi3Idw",authDomain: "akbrand-251b0.firebaseapp.com",projectId: "akbrand-251b0",storageBucket: "akbrand-251b0.firebasestorage.app",messagingSenderId: "632009403430",appId: "1:632009403430:web:aa159412dd7b05c462cae7",measurementId: "G-GVG41CE892"};
-const app=initializeApp(firebaseConfig); const auth=getAuth(app); let confirmRes, base64Img="", liveOn=false;
-window.loadImg=(e)=>{let f=e.target.files[0]; let r=new FileReader(); r.onload=()=>{base64Img=r.result; preview.src=base64Img; preview.style.display='block';}; r.readAsDataURL(f);}
-window.toggleLive=()=>{liveOn=!liveOn; document.getElementById('liveBtn').innerText=liveOn?"🟢 Live Search: ON":"🔴 Live Search: OFF"; document.getElementById('liveBtn').style.background=liveOn?"#00ff88":"#333";}
-window.sendOTP=()=>{window.recaptchaVerifier=new RecaptchaVerifier(auth,'recaptcha',{}); signInWithPhoneNumber(auth,phone.value,window.recaptchaVerifier).then(r=>{confirmRes=r; alert("OTP gaya"); otp.style.display='block'; vBtn.style.display='inline-block';}).catch(e=>alert(e.message));}
-window.verifyOTP=()=>{confirmRes.confirm(otp.value).then(()=>{login.style.display='none'; main.style.display='block';}).catch(()=>alert("Galat OTP"));}
-window.clearChat=()=>{ans.innerText='Welcome Aman!'; history.innerHTML=''; base64Img=""; preview.style.display='none'; q.value='';}
-async function getLiveData(q){ try{ let res=await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(q)}&format=json&pretty=1`); let d=await res.json(); return d.AbstractText||d.RelatedTopics?.[0]?.Text||""; }catch(e){return "";}}
-window.askAk = async ()=>{
- let q=document.getElementById('q').value.trim(); let a=document.getElementById('ans'); let h=document.getElementById('history');
- if(!q &&!base64Img){alert("Kuch likho"); return;}
- h.innerHTML+=`<div class="msg user">${q||"Photo"} ${base64Img?'<br><img src="'+base64Img+'" style="width:60px;border-radius:8px">':''}</div>`;
- document.getElementById('q').value='';
- if(!base64Img && (q.toLowerCase().includes("photo")||q.toLowerCase().includes("poster")||q.toLowerCase().includes("logo")||q.toLowerCase().includes("image banao"))){
-   let img=`https://image.pollinations.ai/prompt/${encodeURIComponent(q)}?width=1024&height=1024&seed=${Date.now()}`; a.innerHTML=`<img src="${img}" style="width:100%;border-radius:10px"><br><a href="${img}" target="_blank" style="color:#00ff88">Download</a>`; h.innerHTML+=`<div class="msg ai"><img src="${img}" style="width:100%;border-radius:10px"><br><a href="${img}" target="_blank" style="color:#00ff88">Download</a></div>`; h.scrollTop=h.scrollHeight; return;
- }
- a.innerText="Akbrand soch raha hai..."+(liveOn?" Live Search ON hai...":"");
- let liveContext=""; if(liveOn || q.toLowerCase().match(/aaj|latest|news|price|bhav|mausam|score/)){ liveContext=await getLiveData(q); }
- let payload; if(base64Img){ payload={model:"llama-3.2-11b-vision-preview",messages:[{role:"user",content:[{type:"text",text:(liveContext+"\n\n"+q)||"Is photo ka detail batao"},{type:"image_url",image_url:{url:base64Img}}]}]}; } else { payload={model:"llama-3.3-70b-versatile",messages:[{role:"system",content:`Tum Akbrand ho. ${liveContext} Hindi me jawab do.`},{role:"user",content:q}]}; }
- let r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
- let d=await r.json(); let finalAns=d.choices?.[0]?.message?.content||"Error: "+JSON.stringify(d);
- a.innerText=finalAns; h.innerHTML+=`<div class="msg ai">${finalAns.replace(/</g,'&lt;')}</div>`; h.scrollTop=h.scrollHeight;
-}
-</script>
-<script>
-// Theme + PWA
-function setTheme(t){
- if(t=='black'){document.documentElement.style.setProperty('--bg','#000000');document.documentElement.style.setProperty('--card','#181818');document.documentElement.style.setProperty('--text','#ffffff')}
- if(t=='white'){document.documentElement.style.setProperty('--bg','#ffffff');document.documentElement.style.setProperty('--card','#f2f2f2');document.documentElement.style.setProperty('--text','#000000')}
- if(t=='pink'){document.documentElement.style.setProperty('--bg','#ffdee9');document.documentElement.style.setProperty('--card','#fff0f5');document.documentElement.style.setProperty('--text','#000000')}
- if(t=='cream'){document.documentElement.style.setProperty('--bg','#fff8e7');document.documentElement.style.setProperty('--card','#fff8e7');document.documentElement.style.setProperty('--text','#000000')}
- localStorage.setItem('ak_theme',t)
-}
-let saved=localStorage.getItem('ak_theme'); if(saved) setTheme(saved);
-let deferredPrompt; window.addEventListener('beforeinstallprompt',(e)=>{e.preventDefault();deferredPrompt=e;document.getElementById('installBar').style.display='block'});
-function installApp(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(()=>{document.getElementById('installBar').style.display='none'})}}
-</script>
-</body></html>
+import {getAuth,signInWithEmailAndPassword,createUserWithEmailAndPassword,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+const firebaseConfig={apiKey:"AIzaSyAlCB1ZXq8Q7TbZn9ud1hwga9F6qNi3Idw",authDomain:"akbrand-251b0.firebaseapp.com",projectId:"akbrand-251b0",storageBucket:"akbrand-251b0.firebasestorage.app",messagingSenderId:"632009403430",appId:"1:632009403430:web:aa159412dd7b05c462cae7",measurementId:"G-GVG41CE892"};
+const app=initializeApp(firebaseConfig);const auth=getAuth(app);let base64Img="",liveOn=false;let currentChatId=null;
+window.setTheme=(t)=>{if(t=='black'){document.documentElement.style.setProperty('--bg','#000');document.documentElement.style.setProperty('--card','#181818');document.documentElement.style.setProperty('--sidebar','#0f0f0f');document.documentElement.style.setProperty('--text','#fff');document.documentElement.style.setProperty('--border','#2a2a2a')}if(t=='white'){document.documentElement.style.setProperty('--bg','#fff');document.documentElement.style.setProperty('--card','#f2f2f2');document.documentElement.style.setProperty('--sidebar','#ececec');document.documentElement.style.setProperty('--text','#000');document.documentElement.style.setProperty('--border','#ddd')}if(t=='pink'){document.documentElement.style.setProperty('--bg','#ffdee9');document.documentElement.style.setProperty('--card','#fff0f5');document.documentElement.style.setProperty('--sidebar','#ffd6e0');document.documentElement.style.setProperty('--text','#000');document.documentElement.style.setProperty('--border','#ffb6c1')}if(t=='cream'){document.documentElement.style.setProperty('--bg','#fff8e7');document.documentElement.style.setProperty('--card','#ffffff');document.documentElement.style.setProperty('--sidebar','#fff2cc');document.documentElement.style.setProperty('--text','#000');document.documentElement.style.setProperty('--border','#e8d5a3')}localStorage.setItem('ak_theme',t)}
+let saved=localStorage.getItem('ak_theme');if(saved)setTheme(saved);
+window.toggleSidebar=()=>document.getElementById('sidebar').classList.toggle('collapsed');
+window.openSettings=()=>{document.getElementById('settingsModal').classList.add('open');loadProfile();updateAccountInfo();};window.closeSettings=()=>document.getElementById('settingsModal').classList.remove('open');
+window.loadProfile=()=>{let p=localStorage.getItem('ak_profile');if(p)profilePic.src=p;else profilePic.src='https://ui-avatars.com/api/?name=Akbrand&background=00ff88&color=000';let count=JSON.parse(localStorage.getItem('ak_chats')||'[]').length;document.getElementById('chatCount').innerText=count;}
+window.changeProfilePic=(e)=>{let r=new FileReader();r.onload=()=>{localStorage.setItem('ak_profile',r.result);profilePic.src=r.result;};r.readAsDataURL(e.target.files[0]);}
+function updateAccountInfo(){let u=auth.currentUser;if(u){document.getElementById('accountInfo').innerHTML=`Email: ${u.email}<br>UID: ${u.uid.slice(0,10)}...<br>Joined: ${new Date(u.metadata.creationTime).toLocaleDateString()}`;document.getElementById('userEmailDisplay').innerHTML=`<i class="fa fa-user"></i> <span>${u.email.split('@')[0]}</span>`}}
+window.loginEmail=async()=>{let e=email.value.trim(),p=password.value;if(!e||p.length<6){alert("Email sahi aur password 6+");return}try{await signInWithEmailAndPassword(auth,e,p);}catch(err){if(err.code.includes('user-not-found')||err.code.includes('invalid-credential')||err.code.includes('invalid-login')){try{await createUserWithEmailAndPassword(auth,e,p);}catch(e2){alert(e2.message)}}else alert(err.message)}};
+window.logout=async()=>{await signOut(auth);location.reload();};
+onAuthStateChanged(auth,(user)=>{if(user){document.getElementById('login').style.display='none';document.getElementById('main').style.display='flex';updateAccountInfo();loadChats();loadProfile();}else{document.getElementById('login').style.display='flex';document.getElementById('main').style.display='none';}});
+window.loadImg=(e)=>{let f=e.target.files[0];let r=new FileReader();r.onload=()=>{base64Img=r.result;preview.src=base64Img;preview.style.display='block';};r.readAsDataURL(f);}
+window.toggleLive=()=>{liveOn=!liveOn;liveBtn.innerText=liveOn?"🟢 Live: ON":"🔴 Live: OFF";liveBtn.style.background=liveOn?"#00ff88":"#222";liveBtn.style.color=liveOn?"#000":"#fff";}
+window.autoGrow=(el)=>{el.style.height='auto';el.style.height=el.scrollHeight+'px';}
+window.newChat=()=>{currentChatId=Date.now().toString();document.getElementById('history').innerHTML=`<div class="msg ai">👋 Naya chat! Mai Akbrand hu - bolo kya kaam hai?</div>`;preview.style.display='none';base64Img='';q.value='';saveCurrentChat();}
+function saveCurrentChat(){let html=document.getElementById('history').innerHTML;if(!html||html.length<50)return;let chats=JSON.parse(localStorage.getItem('ak_chats')||'[]');let existing=chats.find(c=>c.id===currentChatId);let title=document.getElementById('history').innerText.slice(0,30)||'New Chat';if(existing){existing.html=html;}else{chats.unshift({id:currentChatId,title:title,html:html,time:Date.now()});if(chats.length>30)chats.pop();}localStorage.setItem('ak_chats',JSON.stringify(chats));loadChats();}
+window.loadChats=()=>{let chats=JSON.parse(localStorage.getItem('ak_chats')||'[]');historyList.innerHTML='';chats.forEach(c=>{let d=document.createElement('div');d.className='history-item'+(c.id===currentChatId?' active':'');d.innerHTML=`<i class="fa fa-message"></i> ${c.title}`;d.onclick=()=>{currentChatId=c.id;document.getElementById('history').innerHTML=c.html;loadChats();if(window.innerWidth<768)toggleSidebar();};historyList.appendChild(d);});}
+window.clearAllChats=()=>{if(confirm("Saari history delete?")){localStorage.removeItem('ak_chats');loadChats();newChat();}}
+async function getLiveData(query){try{let res=await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&pretty=1`);let d=await res.json();return d.AbstractText||d.RelatedTopics?.[0]?.Text||"";}catch(e){return "";}}
+window.askAk=async()=>{let qu=q.value.trim();let h=document.getElementById('history');if(!qu&&!base64Img)return;if(!currentChatId)currentChatId=Date.now().toString();h.innerHTML+=`<div class="msg user">${qu||"Photo"} ${base64Img?'<br><img src="'+base64Img+'" style="width:80px;border-radius:8px;margin-top:5px">':''}</div>`;q.value='';q.style.height='auto';let tempId='temp_'+Date.now();h.innerHTML+=`<div class="msg ai" id="${tempId}">Soch raha hu...${liveOn?" 🌐 Live ON":""}</div>`;h.parentElement.scrollTop=h.parentElement.scrollHeight;if(!base64Img&&(qu.toLowerCase().includes("photo")||qu.toLowerCase().includes("poster")||qu.toLowerCase().includes("logo")||qu.toLowerCase().includes("banao"))){let img=`https://image.pollinations.ai/prompt/${encodeURIComponent(qu)}?width=1024&height=1024&seed=${Date.now()}`;document.getElementById(tempId).innerHTML=`<img src="${img}" style="width:100%;border-radius:10px"><br><a href="${img}" target="_blank" style="color:#00ff88">📥 Download</a><br>${qu}`;saveCurrentChat();h.parentElement.scrollTop=h.parentElement.scrollHeight;preview.style.display='none';base64Img='';return;}let liveContext="";if(liveOn||qu.toLowerCase().match(/aaj|latest|news|price|bhav|mausam|score/)){liveContext=await getLiveData(qu)}let payload;if(base64Img){payload={model:"llama-3.2-11b-vision-preview",messages:[{role:"user",content:[{type:"text",text:(liveContext+"\n\n"+qu)||"Is photo ka detail batao"},{type:"image_url",image_url:{url:base64Img}}]}]};}else{payload={model:"llama-3.3-70b-versatile",messages:[{role:"system",content:`Tum Akbrand ho. ${liveContext} Hindi me jawab do.`},{role:"user",content:qu}]};}try{let r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});let d=await r.json();let finalAns=d.choices?.[0]?.message?.content||"Error";document.getElementById(tempId).innerText=finalAns;saveCurrentChat();}catch(e){document.getElementById(tempId).innerText="Error: "+e.message}h.parentElement.scrollTop=h.parentElement.scrollHeight;preview.style.display='none';base64Img='';}
+loadProfile();if(!localStorage.getItem('ak_chats'))newChat();else{let chats=JSON.parse(localStorage.getItem('ak_chats')||'[]');if(chats[0]){currentChatId=chats[0].id;document.getElementById('history').innerHTML=chats[0].html;}else newChat();}loadChats();
+</script></body></html>
