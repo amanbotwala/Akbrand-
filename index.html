@@ -1,0 +1,38 @@
+<!DOCTYPE html><html lang="hi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Akbrand ULTRA MEGA</title>
+<style>body{margin:0;background:#000;color:#fff;font-family:Arial}.header{background:#111;padding:15px;text-align:center;border-bottom:2px solid #00ff88}.box{max-width:850px;margin:15px auto;background:#181818;padding:20px;border-radius:15px;border:1px solid #333}input,textarea{width:95%;padding:14px;margin:8px 0;border-radius:10px;background:#222;color:#fff;border:1px solid #333}button{padding:12px 20px;background:linear-gradient(90deg,#00ff88,#00ccff);border:0;border-radius:10px;font-weight:bold;color:#000;margin:5px;cursor:pointer}#main{display:none}#ans{background:#222;padding:15px;border-radius:10px;margin-top:10px;white-space:pre-wrap;text-align:left;min-height:100px;border:1px solid #333}.msg{padding:10px;margin:8px 0;border-radius:10px}.user{background:#00ff8822;text-align:right}.ai{background:#2a2a2a}#preview{max-width:100%;border-radius:10px;margin-top:10px;display:none}.switch{padding:8px 15px;background:#333;color:#fff;border-radius:20px;font-size:13px}</style></head><body>
+<div class="header"><h1>🔥 AKBRAND ULTRA MEGA 🔥</h1><p>405B+70B+Vision+Photo+Live Search - Sab Kuch</p></div>
+<div class="box">
+<div id="login"><h2>OTP Login</h2><input id="phone" placeholder="+91XXXXXXXXXX" value="+91"><button onclick="sendOTP()">OTP Bhejo</button><input id="otp" placeholder="6 Digit OTP" style="display:none"><button id="vBtn" onclick="verifyOTP()" style="display:none">Verify</button><div id="recaptcha"></div><p style="font-size:11px;color:#888">Phone pe OTP ayega, 50/day Free hai</p></div>
+<div id="main"><h2>Akbrand Ready! Aman 🔥</h2>
+<button id="liveBtn" class="switch" onclick="toggleLive()">🔴 Live Search: OFF</button><span style="font-size:11px;color:#888"> ON karo to latest news/price ayega</span><br><br>
+<input type="file" id="imgInput" accept="image/*" onchange="loadImg(event)"><img id="preview">
+<textarea id="q" rows="3" placeholder="Kuch bhi pucho... aaj ka news, math, photo banao, screenshot translate..."></textarea><br>
+<button onclick="askAk()">🚀 Bhejo</button><button onclick="clearChat()" style="background:#333;color:#fff">Clear</button>
+<div id="ans">👋 Welcome Aman! Mai Akbrand hu - Photo, Live News, sab kuch ready hai!</div><div id="history"></div></div>
+</div>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {getAuth,RecaptchaVerifier,signInWithPhoneNumber} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+const firebaseConfig = {apiKey: "AIzaSyAlCB1ZXq8Q7TbZn9ud1hwga9F6qNi3Idw",authDomain: "akbrand-251b0.firebaseapp.com",projectId: "akbrand-251b0",storageBucket: "akbrand-251b0.firebasestorage.app",messagingSenderId: "632009403430",appId: "1:632009403430:web:aa159412dd7b05c462cae7",measurementId: "G-GVG41CE892"};
+const app=initializeApp(firebaseConfig); const auth=getAuth(app); let confirmRes, base64Img="", liveOn=false;
+window.loadImg=(e)=>{let f=e.target.files[0]; let r=new FileReader(); r.onload=()=>{base64Img=r.result; preview.src=base64Img; preview.style.display='block';}; r.readAsDataURL(f);}
+window.toggleLive=()=>{liveOn=!liveOn; document.getElementById('liveBtn').innerText=liveOn?"🟢 Live Search: ON":"🔴 Live Search: OFF"; document.getElementById('liveBtn').style.background=liveOn?"#00ff88":"#333";}
+window.sendOTP=()=>{window.recaptchaVerifier=new RecaptchaVerifier(auth,'recaptcha',{}); signInWithPhoneNumber(auth,phone.value,window.recaptchaVerifier).then(r=>{confirmRes=r; alert("OTP gaya"); otp.style.display='block'; vBtn.style.display='inline-block';}).catch(e=>alert(e.message));}
+window.verifyOTP=()=>{confirmRes.confirm(otp.value).then(()=>{login.style.display='none'; main.style.display='block';}).catch(()=>alert("Galat OTP"));}
+window.clearChat=()=>{ans.innerText='Clear'; history.innerHTML=''; base64Img=""; preview.style.display='none';}
+async function getLiveData(q){ try{ let res=await fetch(`https://api.duckduckgo.com/?q=${encodeURIComponent(q)}&format=json&pretty=1`); let d=await res.json(); return d.AbstractText||d.RelatedTopics?.[0]?.Text||""; }catch(e){return "";}}
+window.askAk = async ()=>{
+ let q=document.getElementById('q').value.trim(); let a=document.getElementById('ans'); let h=document.getElementById('history');
+ if(!q &&!base64Img){alert("Kuch likho"); return;}
+ h.innerHTML+=`<div class="msg user">${q||"Photo"} ${base64Img?'<br><img src="'+base64Img+'" style="width:60px">':''}</div>`;
+ if(!base64Img && (q.toLowerCase().includes("photo")||q.toLowerCase().includes("poster")||q.toLowerCase().includes("logo")||q.toLowerCase().includes("image banao"))){
+   let img=`https://image.pollinations.ai/prompt/${encodeURIComponent(q)}?width=1024&height=1024&seed=${Date.now()}`; a.innerHTML=`<img src="${img}" style="width:100%;border-radius:10px"><br><a href="${img}" target="_blank" style="color:#00ff88">Download</a>`; h.innerHTML+=`<div class="msg ai"><img src="${img}" style="width:100%"></div>`; return;
+ }
+ a.innerText="Akbrand soch raha hai..."+(liveOn?" Live Search ON hai...":"");
+ let liveContext=""; if(liveOn || q.toLowerCase().match(/aaj|latest|news|price|bhav|mausam|score/)){ liveContext=await getLiveData(q); }
+ let payload; if(base64Img){ payload={model:"llama-3.2-11b-vision-preview",messages:[{role:"user",content:[{type:"text",text:(liveContext+"\n\n"+q)||"Is photo ka detail batao"},{type:"image_url",image_url:{url:base64Img}}]}]}; } else { payload={model:"llama-3.3-70b-versatile",messages:[{role:"system",content:`Tum Akbrand ho. ${liveContext} Hindi me jawab do.`},{role:"user",content:q}]}; }
+ let r=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+ let d=await r.json(); let finalAns=d.choices?.[0]?.message?.content||"Error: "+JSON.stringify(d);
+ a.innerText=finalAns; h.innerHTML+=`<div class="msg ai">${finalAns.replace(/</g,'&lt;')}</div>`;
+}
+</script></body></html>
